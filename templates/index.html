@@ -1,0 +1,237 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#080d19">
+    <meta name="description" content="OrbitGuard satellite telemetry and orbital risk monitoring dashboard">
+    <title>OrbitGuard | Mission Intelligence</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/static/js/dashboard.js" defer></script>
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar" id="sidebar">
+            <a href="#overview" class="brand">
+                <span class="brand-mark">O<span>G</span></span>
+                <span class="brand-copy">
+                    <strong>ORBITGUARD</strong>
+                    <small>MISSION INTELLIGENCE</small>
+                </span>
+            </a>
+
+            <div class="nav-label">WORKSPACE</div>
+            <nav class="navigation" aria-label="Main navigation">
+                <a class="nav-link active" href="#overview">
+                    <span class="nav-icon">◈</span> Overview
+                </a>
+                <a class="nav-link" href="#analytics">
+                    <span class="nav-icon">▥</span> Risk Analytics
+                </a>
+                <a class="nav-link" href="#records">
+                    <span class="nav-icon">▤</span> Assessment Records
+                </a>
+                <a class="nav-link" href="#alerts">
+                    <span class="nav-icon">⚠</span> Critical Alerts
+                    <span class="nav-count" id="alertCount">—</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-bottom">
+                <div class="system-card">
+                    <span class="status-dot"></span>
+                    <div>
+                        <strong>Processing Engine</strong>
+                        <small>Apache Spark RDD</small>
+                    </div>
+                </div>
+                <div class="sidebar-caption">ORBITGUARD PLATFORM · V1.0</div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <div class="breadcrumb">
+                    <span>Workspace</span><span>/</span><strong>Mission Overview</strong>
+                </div>
+                <div class="topbar-actions">
+                    <span class="live-indicator">
+                        <span class="status-dot"></span> SYSTEM MONITOR
+                    </span>
+                    <button class="icon-button mobile-menu" id="menuToggle"
+                            aria-label="Toggle navigation" aria-expanded="false">☰</button>
+                    <button class="refresh-button" id="refreshButton">
+                        <span id="refreshIcon">↻</span> Refresh Data
+                    </button>
+                </div>
+            </header>
+
+            <section class="page-heading" id="overview">
+                <div>
+                    <div class="eyebrow"><span class="eyebrow-line"></span> SPACE SITUATIONAL AWARENESS</div>
+                    <h1>Mission <span>Intelligence.</span></h1>
+                    <p>Monitor satellite telemetry, evaluate orbital threats, and explore mission risk.</p>
+                </div>
+                <div class="mission-chip">
+                    <span class="orbit-icon">◎</span>
+                    <div><small>ANALYTICS ENGINE</small><strong>SPARK RDD</strong></div>
+                </div>
+            </section>
+
+            <div class="error-banner" id="errorBanner" role="alert" hidden>
+                <span>⚠</span>
+                <div><strong>Unable to load mission data</strong><p id="errorMessage">Check that Flask is running.</p></div>
+                <button id="retryButton" class="secondary-button">Retry</button>
+            </div>
+
+            <section class="metric-grid" aria-label="Mission summary">
+                <article class="metric-card">
+                    <div class="metric-top"><span>Total Assessments</span><span class="metric-icon blue">▤</span></div>
+                    <div class="metric-value" id="total">—</div>
+                    <div class="metric-foot"><span class="metric-dot blue-dot"></span> Processed telemetry records</div>
+                </article>
+                <article class="metric-card">
+                    <div class="metric-top"><span>Critical Risk</span><span class="metric-icon red">⚠</span></div>
+                    <div class="metric-value" id="critical">—</div>
+                    <div class="metric-foot"><span class="metric-dot red-dot"></span> Requires immediate review</div>
+                </article>
+                <article class="metric-card">
+                    <div class="metric-top"><span>High Risk</span><span class="metric-icon orange">↗</span></div>
+                    <div class="metric-value" id="high">—</div>
+                    <div class="metric-foot"><span class="metric-dot orange-dot"></span> Elevated threat records</div>
+                </article>
+                <article class="metric-card">
+                    <div class="metric-top"><span>Satellites Tracked</span><span class="metric-icon cyan">◎</span></div>
+                    <div class="metric-value" id="satellites">—</div>
+                    <div class="metric-foot"><span class="metric-dot cyan-dot"></span> Unique satellite identifiers</div>
+                </article>
+            </section>
+
+            <section class="panel analytics-panel" id="analytics">
+                <div class="panel-heading">
+                    <div>
+                        <div class="eyebrow">DATA INTELLIGENCE</div>
+                        <h2>Risk Analytics</h2>
+                        <p>Distribution and comparison of assessed orbital telemetry.</p>
+                    </div>
+                    <span class="panel-tag">LIVE API DATA</span>
+                </div>
+
+                <div class="chart-grid">
+                    <article class="chart-card">
+                        <div class="chart-heading">
+                            <div><h3>Risk Distribution</h3><p>Breakdown by risk classification</p></div>
+                        </div>
+                        <div class="chart-area doughnut-area">
+                            <canvas id="riskChart" role="img" aria-label="Risk category distribution chart"></canvas>
+                            <div class="chart-center" aria-hidden="true">
+                                <strong id="chartTotal">—</strong>
+                                <span>RECORDS</span>
+                            </div>
+                        </div>
+                        <div id="riskLegend" class="chart-legend"></div>
+                    </article>
+
+                    <article class="chart-card">
+                        <div class="chart-heading">
+                            <div><h3>Satellite Comparison</h3><p>Telemetry records per satellite</p></div>
+                        </div>
+                        <div class="chart-area">
+                            <canvas id="satelliteChart" role="img" aria-label="Records by satellite chart"></canvas>
+                        </div>
+                    </article>
+                </div>
+
+                <div class="analytics-footer">
+                    <div class="average-score">
+                        <span class="score-icon">◉</span>
+                        <div><small>AVERAGE RISK SCORE</small><strong id="average">—</strong></div>
+                    </div>
+                    <div class="analytics-note">Risk values reflect your configured assessment rules.</div>
+                </div>
+            </section>
+
+            <section class="panel records-panel" id="records">
+                <div class="panel-heading records-heading">
+                    <div>
+                        <div class="eyebrow">TELEMETRY DATABASE</div>
+                        <h2>Assessment Records</h2>
+                        <p>Search, filter, and inspect individual risk assessments.</p>
+                    </div>
+                    <a class="export-button" href="/api/export">↓ <span>Export CSV</span></a>
+                </div>
+
+                <div class="filter-bar">
+                    <label class="search-box">
+                        <span>⌕</span>
+                        <input id="search" type="search" placeholder="Search record, satellite or reason..." aria-label="Search assessment records">
+                    </label>
+                    <select id="category" aria-label="Filter by risk category">
+                        <option value="">All Risk Categories</option>
+                        <option value="Critical">Critical</option>
+                        <option value="High">High</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Low">Low</option>
+                    </select>
+                    <select id="satellite" aria-label="Filter by satellite">
+                        <option value="">All Satellites</option>
+                    </select>
+                    <button id="apply" class="filter-button">Apply Filters</button>
+                </div>
+
+                <div class="table-meta">
+                    <p id="recordCount" aria-live="polite">Loading records...</p>
+                    <span class="table-indicator"><span class="status-dot"></span> Assessment data</span>
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr>
+                            <th>RECORD ID</th><th>SATELLITE</th><th>DEBRIS DISTANCE</th>
+                            <th>RISK SCORE</th><th>CLASSIFICATION</th><th>RISK REASONS</th>
+                        </tr></thead>
+                        <tbody id="recordBody">
+                            <tr><td colspan="6" class="empty-state">Loading assessment records...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-footer">Showing a maximum of 500 matching records per request.</div>
+            </section>
+
+            <section class="panel alerts-panel" id="alerts">
+                <div class="panel-heading">
+                    <div>
+                        <div class="eyebrow">THREAT MONITORING</div>
+                        <h2>Priority Risk Records</h2>
+                        <p>Records returned by the existing high-risk API.</p>
+                    </div>
+                    <span class="alert-tag">REVIEW REQUIRED</span>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr>
+                            <th>RECORD ID</th><th>SATELLITE</th><th>RISK SCORE</th>
+                            <th>CLASSIFICATION</th><th>RISK REASONS</th>
+                        </tr></thead>
+                        <tbody id="highRiskBody">
+                            <tr><td colspan="5" class="empty-state">Loading priority records...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <footer class="footer">
+                <div><span class="footer-brand">◉ ORBITGUARD</span> <span>Space Risk Assessment Platform</span></div>
+                <div>Powered by <strong>Apache Spark RDD</strong> <span class="footer-separator">·</span> <span id="lastUpdated">Waiting for data</span></div>
+            </footer>
+        </main>
+    </div>
+</body>
+</html>
