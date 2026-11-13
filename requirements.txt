@@ -3,3 +3,5 @@ pyspark==3.5.7
 pandas
 matplotlib
 streamlit
+Flask
+gunicorn
